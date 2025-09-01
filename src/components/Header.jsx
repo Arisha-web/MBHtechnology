@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { HashLink } from "react-router-hash-link"; // ✅ new import
+import { HashLink } from "react-router-hash-link"; // ✅ HashLink for smooth scroll
 import { FaBars, FaTimes } from "react-icons/fa"; 
 import logo from "../assets/images/logo.png"; 
 
@@ -23,9 +23,9 @@ const HeaderHero = () => {
 
           {/* Desktop Menu */}
           <nav className="hidden md:flex space-x-6 font-semibold">
-            <Link to="/" className="text-white hover:text-blue-500 transition-colors">
+            <HashLink smooth to="/#hero" className="text-white hover:text-blue-500 transition-colors">
               Home
-            </Link>
+            </HashLink>
             <HashLink smooth to="/#aboutus" className="text-white hover:text-blue-500 transition-colors">
               About Us
             </HashLink>
@@ -63,9 +63,9 @@ const HeaderHero = () => {
           <nav className="md:hidden bg-gray-800 p-5 font-semibold">
             <ul className="flex flex-col space-y-4">
               <li>
-                <Link to="/" className="block text-white hover:text-blue-500 transition-colors">
+                <HashLink smooth to="/#hero" className="block text-white hover:text-blue-500 transition-colors">
                   Home
-                </Link>
+                </HashLink>
               </li>
               <li>
                 <HashLink smooth to="/#aboutus" className="block text-white hover:text-blue-500 transition-colors">

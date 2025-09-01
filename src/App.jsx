@@ -1,12 +1,10 @@
-
+import React from "react";
 import Header from "./components/Header";
 import Aboutus from "./components/Aboutus";
 import Features from "./components/Features";
 import Services from "./components/Services";
 import Footer from "./components/Footer";
-import { Routes, Route } from "react-router-dom";
-
-
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 
 import Softwareandmis from "./pages/Softwareandmis";
 import Development from "./pages/Development";
@@ -15,11 +13,9 @@ import Inventory from "./pages/Inventory";
 import Security from "./pages/Security";
 import Equipment from "./pages/Equipment";
 
-
-
 function App() {
   return (
-     <>
+    <Router>
       <Header />
       <div className="pt-20">
         <Routes>
@@ -41,13 +37,9 @@ function App() {
           <Route path="/Inventory" element={<Inventory />} />
           <Route path="/Security" element={<Security />} />
           <Route path="/Equipment" element={<Equipment />} />
-
-
-
-          
         </Routes>
       </div>
-    </>
+    </Router>
   );
 }
 

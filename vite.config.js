@@ -7,5 +7,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  base: '/MBHtechnology/'   // <-- yahan apni repo name dalna
 })
+
 
