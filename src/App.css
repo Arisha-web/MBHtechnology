@@ -1,0 +1,28 @@
+.custom-section {
+  position: relative;
+  background: #1f2937; /* gray-900 jaisa */
+  color: white;
+  padding: 100px 20px;
+  border-right: 5px solid orange;  /* right border orange */
+  border-bottom: 5px solid gray;   /* bottom border gray */
+  border-bottom-right-radius: 30px; /* corner round */
+  
+  /* Animation default state */
+  transform: translateX(-100%);
+  opacity: 0;
+  animation: slideInLeft 1s ease-out forwards;
+}
+
+/* Keyframes for animation */
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+
