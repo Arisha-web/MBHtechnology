@@ -35,6 +35,24 @@ using (
   )
 );
 
+drop policy if exists "Installers view offered jobs" on public.service_requests;
+create policy "Installers view offered jobs"
+on public.service_requests for select to authenticated
+using (
+  exists (
+    select 1
+    from public.installer_job_offers o
+    join public.installers i on i.id=o.installer_id
+    where o.request_id=service_requests.id
+      and i.user_id=auth.uid()
+      and i.is_active=true
+      and o.status in ('Pending','Accepted','Approved')
+  )
+);
+
+grant select on public.installer_job_offers to authenticated;
+grant select on public.installers to authenticated;
+
 create or replace function public.mbh_job_category(p_service text)
 returns text language sql immutable
 as $$
