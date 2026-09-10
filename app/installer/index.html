@@ -1,6 +1,6 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#071a35"><link rel="icon" href="../mbh-official-icon-2026.png"><title>MBH Installer Portal</title>
+<meta name="theme-color" content="#071a35"><link rel="icon" href="../mbh-official-icon-2026.png"><title>MBH Installer Portal v2</title>
 <style>
 :root{--n:#071a35;--b:#0b63ce;--g:#0d9b63;--bg:#f3f7fb;--m:#66758a}*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI;background:var(--bg);color:#132238}
 header{background:linear-gradient(135deg,var(--n),#0b4b96);color:#fff;padding:18px}.top{max-width:760px;margin:auto;display:flex;align-items:center;gap:12px}.top img{width:54px;border-radius:14px}.top h1{margin:0;font-size:21px}
@@ -12,12 +12,12 @@ label{display:block;font-size:13px;font-weight:800;margin:10px 0 5px}input,selec
 <section id="loginBox" class="box login"><h2>Installer Login</h2><p class="muted">MBH admin se approved email aur apne password se login karein.</p>
 <label>Email</label><input id="email" type="email" placeholder="Approved installer email"><label>Password</label><input id="password" type="password" minlength="8" placeholder="Minimum 8 characters">
 <button class="btn wide" onclick="login()">Login</button><button class="btn green wide" onclick="signup()">First Time: Create Installer Account</button><p id="msg" class="muted"></p></section>
-<section id="portal" class="hidden"><div class="head"><div><h2 id="welcome">My Jobs</h2><p id="profile" class="muted"></p></div><button class="btn" onclick="logout()">Logout</button></div>
+<section id="portal" class="hidden"><div class="head"><div><h2 id="welcome">My Jobs</h2><p id="profile" class="muted"></p></div><button class="btn" onclick="logout()">Logout</button></div><section class="box"><div class="head"><h3>🔔 New Job Notifications <span id="offerCount" class="tag">0</span></h3><button class="btn" onclick="enableNotifications()">Enable Alerts</button></div><div id="offers"><p class="muted">No new job offers.</p></div></section>
 <div class="stats"><div class="stat"><b id="activeCount">0</b>Active Jobs</div><div class="stat"><b id="doneCount">0</b>Completed</div></div><div id="jobs"></div></section>
 </main>
 <script>
 const URL="https://ftwnknbheqbogeooihsg.supabase.co",KEY="sb_publishable_VS1c-OlPeswufE3ZpJa2Yg_TRDGW1YP",STORE="mbh_installer_session_v1";
-let token="",me=null,jobs=[];
+let token="",me=null,jobs=[],offers=[],allRequests=[],knownOffers=new Set();
 const esc=x=>String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 function note(t){document.getElementById("msg").textContent=t}
 async function api(path,options={}){
@@ -40,11 +40,30 @@ async function signup(){
 async function openPortal(){
  const u=await api("/auth/v1/user"),profiles=await api("/rest/v1/installers?select=*&user_id=eq."+encodeURIComponent(u.id));
  if(!profiles?.length)throw new Error("This email is not approved by MBH admin.");
- me=profiles[0];loginBox.classList.add("hidden");portal.classList.remove("hidden");welcome.textContent="Welcome, "+me.full_name;profile.textContent=(me.phone||"")+" · "+(me.city||"")+" · "+(me.skills||"");note("");await loadJobs();
+ me=profiles[0];document.getElementById("loginBox").classList.add("hidden");document.getElementById("portal").classList.remove("hidden");document.getElementById("welcome").textContent="Welcome, "+me.full_name;document.getElementById("profile").textContent=(me.phone||"")+" · "+(me.city||"")+" · "+((me.categories||[]).join(", ")||me.skills||"");note("");await loadData();if(!window.mbhPoll)window.mbhPoll=setInterval(loadData,30000);
 }
-async function loadJobs(){
- try{jobs=await api("/rest/v1/service_requests?select=id,ticket_no,customer_name,phone,location,service,request_type,details,status,installer_notes,created_at&order=created_at.desc")||[];render()}
- catch(e){document.getElementById("jobs").innerHTML='<div class="box">'+esc(e.message)+'</div>'}
+async function loadData(){
+ try{
+  const previous=new Set(offers.map(x=>x.id));
+  [offers,allRequests]=await Promise.all([
+   api("/rest/v1/installer_job_offers?select=*&status=eq.Pending&order=notified_at.desc"),
+   api("/rest/v1/service_requests?select=id,ticket_no,customer_name,phone,location,service,request_type,details,status,installer_id,installer_notes,created_at&order=created_at.desc")
+  ]);
+  jobs=(allRequests||[]).filter(j=>j.installer_id===me.id);
+  renderOffers(previous);render();
+ }catch(e){document.getElementById("jobs").innerHTML='<div class="box">'+esc(e.message)+'</div>'}
+}
+function renderOffers(previous){
+ document.getElementById("offerCount").textContent=offers.length;
+ document.getElementById("offers").innerHTML=offers.length?offers.map(o=>{const j=allRequests.find(x=>x.id===o.request_id)||{};return '<article class="job" style="padding:12px;margin-top:10px"><strong>'+esc(j.service||"New Job")+'</strong><p>'+esc(j.customer_name||"Customer")+' · '+esc(j.location||"")+'<br>'+esc(j.details||"")+'</p><div class="head"><button class="btn green" onclick="respondOffer(\''+o.id+'\',true)">Accept</button><button class="btn" style="background:#a21d1d" onclick="respondOffer(\''+o.id+'\',false)">Decline</button></div></article>'}).join(""):'<p class="muted">No new job offers.</p>';
+ if(Notification.permission==="granted")offers.forEach(o=>{if(!previous.has(o.id)&&!knownOffers.has(o.id)){const j=allRequests.find(x=>x.id===o.request_id)||{};new Notification("New MBH Job",{body:(j.service||"Service")+" · "+(j.location||"Open installer portal")});knownOffers.add(o.id)}});
+}
+async function respondOffer(id,accept){
+ try{await api("/rest/v1/rpc/installer_respond_offer",{method:"POST",body:JSON.stringify({p_offer_id:id,p_accept:accept})});alert(accept?"Job accepted. Waiting for admin approval.":"Job declined.");await loadData()}catch(e){alert(e.message)}
+}
+async function enableNotifications(){
+ if(!("Notification" in window)){alert("Notifications are not supported in this browser.");return}
+ const p=await Notification.requestPermission();alert(p==="granted"?"Job alerts enabled.":"Please allow notifications in browser settings.");
 }
 function render(){
  activeCount.textContent=jobs.filter(j=>j.status!=="Completed").length;doneCount.textContent=jobs.filter(j=>j.status==="Completed").length;
@@ -52,7 +71,7 @@ function render(){
 }
 async function updateJob(id){
  const status=document.getElementById("s_"+id).value,notes=document.getElementById("n_"+id).value;
- try{await api("/rest/v1/rpc/installer_update_job",{method:"POST",body:JSON.stringify({p_request_id:id,p_status:status,p_notes:notes})});alert("Job updated successfully.");await loadJobs()}catch(e){alert(e.message)}
+ try{await api("/rest/v1/rpc/installer_update_job",{method:"POST",body:JSON.stringify({p_request_id:id,p_status:status,p_notes:notes})});alert("Job updated successfully.");await loadData()}catch(e){alert(e.message)}
 }
 function logout(){localStorage.removeItem(STORE);location.reload()}
 (async()=>{try{const s=JSON.parse(localStorage.getItem(STORE)||"null");if(!s?.access_token)return;token=s.access_token;await openPortal()}catch{localStorage.removeItem(STORE);token=""}})();
