@@ -1,0 +1,7 @@
+category,brand,model,product_name,specifications,cost_price,margin_percent,installation_charge,testing_charge,warranty,stock_status
+CCTV Surveillance,Hikvision,,IP Camera,Enter model and specifications,0,25,0,0,1 Year,Available
+Network Infrastructure,TP-Link,,Network Switch,Enter ports and speed,0,25,0,0,1 Year,Available
+Computers & Equipment,Dell,,Desktop Computer,Enter CPU RAM SSD and display,0,25,0,0,1 Year,Available
+IP Telephony & PABX,Panasonic,,PABX System,Enter capacity and card details,0,25,0,0,1 Year,Available
+Fire Alarm Systems,,,Fire Alarm Item,Enter brand model and specifications,0,25,0,0,1 Year,Available
+Electrical & UPS,,,UPS / Electrical Item,Enter rating and specifications,0,25,0,0,1 Year,Available
