@@ -1,0 +1,59 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#071a35"><link rel="icon" href="../mbh-official-icon-2026.png"><title>MBH Installer Portal</title>
+<style>
+:root{--n:#071a35;--b:#0b63ce;--g:#0d9b63;--bg:#f3f7fb;--m:#66758a}*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI;background:var(--bg);color:#132238}
+header{background:linear-gradient(135deg,var(--n),#0b4b96);color:#fff;padding:18px}.top{max-width:760px;margin:auto;display:flex;align-items:center;gap:12px}.top img{width:54px;border-radius:14px}.top h1{margin:0;font-size:21px}
+.wrap{max-width:760px;margin:18px auto;padding:0 14px}.box,.stat{background:#fff;padding:18px;border-radius:17px;box-shadow:0 4px 20px #173c6415;margin-bottom:14px}.login{max-width:440px;margin:45px auto}
+label{display:block;font-size:13px;font-weight:800;margin:10px 0 5px}input,select,textarea{width:100%;padding:12px;border:1px solid #d5e0ec;border-radius:10px;font:inherit}.btn{border:0;background:var(--b);color:#fff;padding:12px 16px;border-radius:10px;font-weight:800;cursor:pointer}.green{background:var(--g)}.wide{width:100%;margin-top:13px}.muted{color:var(--m);font-size:13px}.hidden{display:none}.head{display:flex;justify-content:space-between;align-items:center;gap:10px}.tag{display:inline-block;background:#e7f7ef;color:#087a4c;padding:5px 9px;border-radius:20px;font-size:12px;font-weight:800}.job{border-left:5px solid #22b8f0}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{text-align:center}.stat b{font-size:27px;display:block;color:var(--b)}
+</style></head><body>
+<header><div class="top"><img src="../mbh-official-icon-2026.png"><div><h1>MBH Installer Portal</h1><small>Assigned field jobs</small></div></div></header>
+<main class="wrap">
+<section id="loginBox" class="box login"><h2>Installer Login</h2><p class="muted">MBH admin se approved email aur apne password se login karein.</p>
+<label>Email</label><input id="email" type="email" placeholder="Approved installer email"><label>Password</label><input id="password" type="password" minlength="8" placeholder="Minimum 8 characters">
+<button class="btn wide" onclick="login()">Login</button><button class="btn green wide" onclick="signup()">First Time: Create Installer Account</button><p id="msg" class="muted"></p></section>
+<section id="portal" class="hidden"><div class="head"><div><h2 id="welcome">My Jobs</h2><p id="profile" class="muted"></p></div><button class="btn" onclick="logout()">Logout</button></div>
+<div class="stats"><div class="stat"><b id="activeCount">0</b>Active Jobs</div><div class="stat"><b id="doneCount">0</b>Completed</div></div><div id="jobs"></div></section>
+</main>
+<script>
+const URL="https://ftwnknbheqbogeooihsg.supabase.co",KEY="sb_publishable_VS1c-OlPeswufE3ZpJa2Yg_TRDGW1YP",STORE="mbh_installer_session_v1";
+let token="",me=null,jobs=[];
+const esc=x=>String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+function note(t){document.getElementById("msg").textContent=t}
+async function api(path,options={}){
+ const c=new AbortController(),t=setTimeout(()=>c.abort(),15000),headers={apikey:KEY,Authorization:"Bearer "+(token||KEY),...(options.headers||{})};if(options.body)headers["Content-Type"]="application/json";
+ try{const r=await fetch(URL+path,{...options,headers,signal:c.signal}),raw=await r.text();let d;try{d=raw?JSON.parse(raw):null}catch{d=raw}if(!r.ok)throw new Error(d?.message||d?.msg||d?.error_description||d?.error||("Request failed "+r.status));return d}
+ catch(e){if(e.name==="AbortError")throw new Error("Connection timed out. Try again.");throw e}finally{clearTimeout(t)}
+}
+async function login(){
+ const e=email.value.trim(),p=password.value;if(!e||p.length<8)return note("Valid email aur minimum 8-character password enter karein.");
+ note("Logging in...");
+ try{const d=await api("/auth/v1/token?grant_type=password",{method:"POST",body:JSON.stringify({email:e,password:p})});token=d.access_token;localStorage.setItem(STORE,JSON.stringify({access_token:d.access_token,refresh_token:d.refresh_token}));await openPortal()}
+ catch(x){note(x.message)}
+}
+async function signup(){
+ const e=email.value.trim(),p=password.value;if(!e||p.length<8)return note("Valid email aur minimum 8-character password enter karein.");
+ note("Creating installer account...");
+ try{const d=await api("/auth/v1/signup",{method:"POST",body:JSON.stringify({email:e,password:p})});if(d.access_token){token=d.access_token;localStorage.setItem(STORE,JSON.stringify({access_token:d.access_token,refresh_token:d.refresh_token}));await openPortal()}else note("Confirmation email sent. Confirm karke phir Login karein.")}
+ catch(x){note(x.message)}
+}
+async function openPortal(){
+ const u=await api("/auth/v1/user"),profiles=await api("/rest/v1/installers?select=*&user_id=eq."+encodeURIComponent(u.id));
+ if(!profiles?.length)throw new Error("This email is not approved by MBH admin.");
+ me=profiles[0];loginBox.classList.add("hidden");portal.classList.remove("hidden");welcome.textContent="Welcome, "+me.full_name;profile.textContent=(me.phone||"")+" · "+(me.city||"")+" · "+(me.skills||"");note("");await loadJobs();
+}
+async function loadJobs(){
+ try{jobs=await api("/rest/v1/service_requests?select=id,ticket_no,customer_name,phone,location,service,request_type,details,status,installer_notes,created_at&order=created_at.desc")||[];render()}
+ catch(e){document.getElementById("jobs").innerHTML='<div class="box">'+esc(e.message)+'</div>'}
+}
+function render(){
+ activeCount.textContent=jobs.filter(j=>j.status!=="Completed").length;doneCount.textContent=jobs.filter(j=>j.status==="Completed").length;
+ document.getElementById("jobs").innerHTML=jobs.length?jobs.map(j=>'<article class="box job"><span class="tag">'+esc(j.status)+'</span><h3>'+esc(j.ticket_no||"Job")+' · '+esc(j.customer_name)+'</h3><p><b>'+esc(j.service)+'</b><br>'+esc(j.location)+'<br><a href="tel:'+esc(j.phone)+'">'+esc(j.phone)+'</a></p><p class="muted">'+esc(j.details||"")+'</p><label>Job Status</label><select id="s_'+j.id+'">'+["Technician Assigned","Work in Progress","Completed"].map(s=>'<option '+(s===j.status?"selected":"")+'>'+s+'</option>').join("")+'</select><label>Work Notes</label><textarea id="n_'+j.id+'" placeholder="Site visit / installation notes">'+esc(j.installer_notes||"")+'</textarea><button class="btn green wide" onclick="updateJob(\''+j.id+'\')">Update Job</button></article>').join(""):'<div class="box">No jobs assigned yet.</div>';
+}
+async function updateJob(id){
+ const status=document.getElementById("s_"+id).value,notes=document.getElementById("n_"+id).value;
+ try{await api("/rest/v1/rpc/installer_update_job",{method:"POST",body:JSON.stringify({p_request_id:id,p_status:status,p_notes:notes})});alert("Job updated successfully.");await loadJobs()}catch(e){alert(e.message)}
+}
+function logout(){localStorage.removeItem(STORE);location.reload()}
+(async()=>{try{const s=JSON.parse(localStorage.getItem(STORE)||"null");if(!s?.access_token)return;token=s.access_token;await openPortal()}catch{localStorage.removeItem(STORE);token=""}})();
+</script></body></html>
