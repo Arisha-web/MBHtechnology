@@ -1,7 +1,7 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#071a35"><link rel="icon" href="../mbh-official-icon-2026.png">
-<title>MBH Installer Management v3</title>
+<title>MBH Installer Management v5</title>
 <style>
 :root{--n:#071a35;--b:#0b63ce;--g:#0d9b63;--bg:#f3f7fb;--m:#66758a}*{box-sizing:border-box}
 body{margin:0;font-family:system-ui,-apple-system,Segoe UI;background:var(--bg);color:#132238}
@@ -61,13 +61,17 @@ async function addInstaller(){
  }catch(e){msgEl.textContent="Error: "+e.message}
 }
 function renderInstallers(){
- installersEl=document.getElementById("installers");
- installersEl.innerHTML=installers.length?installers.map(i=>'<article class="box"><div class="head"><strong>'+esc(i.full_name)+'</strong><span class="tag '+(i.is_active?"":"off")+'">'+(i.is_active?"Active":"Inactive")+'</span></div><p>'+esc(i.phone)+'<br>'+esc(i.email)+'</p><p class="muted">'+esc(i.city||"")+" · "+esc(i.skills||"No skills added")+'</p><label>Notification Categories</label><select id="cats_'+i.id+'" multiple size="5">'+categoryOptions.map(c=>'<option value="'+c[0]+'" '+((i.categories||[]).includes(c[0])?"selected":"")+'>'+c[1]+'</option>').join("")+'</select><div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn green" onclick="saveCategories(\''+i.id+'\')">Save Categories</button><button class="btn" onclick="toggleInstaller(\''+i.id+'\','+(!i.is_active)+')">'+(i.is_active?"Deactivate":"Activate")+'</button></div></article>').join(""):'<div class="box">No installers added.</div>';
+ const installersEl=document.getElementById("installers");
+ installersEl.innerHTML=installers.length?installers.map(i=>'<article class="box"><div class="head"><strong>'+esc(i.full_name)+'</strong><span class="tag '+(i.is_active?"":"off")+'">'+(i.is_active?"Active":"Inactive")+'</span></div><p>'+esc(i.phone)+'<br>'+esc(i.email)+'</p><p class="muted">'+esc(i.city||"")+' · '+esc(i.skills||"No skills added")+'</p><label>Notification Categories</label><select id="cats_'+i.id+'" multiple size="5">'+categoryOptions.map(c=>'<option value="'+c[0]+'" '+((i.categories||[]).includes(c[0])?"selected":"")+'>'+c[1]+'</option>').join("")+'</select><p class="muted">ایک سے زیادہ کیٹیگریز منتخب کی جا سکتی ہیں۔</p><button class="btn green" onclick="saveCategories(\''+i.id+'\')">Save Categories</button> <button class="btn" onclick="toggleInstaller(\''+i.id+'\','+(!i.is_active)+')">'+(i.is_active?"Deactivate":"Activate")+'</button></article>').join(""):'<div class="box">No installers added.</div>';
 }
 async function saveCategories(id){
- const el=document.getElementById("cats_"+id),categories=[...el.selectedOptions].map(x=>x.value);
- if(!categories.length){alert("Kam az kam ek category select karein.");return}
- try{await api("/rest/v1/installers?id=eq."+encodeURIComponent(id),{method:"PATCH",headers:{Prefer:"return=minimal"},body:JSON.stringify({categories})});alert("Notification categories saved.");await refresh()}catch(e){alert(e.message)}
+ const select=document.getElementById("cats_"+id),categories=[...select.selectedOptions].map(o=>o.value);
+ if(!categories.length){alert("کم از کم ایک کیٹیگری منتخب کریں۔");return}
+ try{
+  await api("/rest/v1/installers?id=eq."+encodeURIComponent(id),{method:"PATCH",headers:{Prefer:"return=minimal"},body:JSON.stringify({categories})});
+  alert("Notification categories saved.");
+  await refresh();
+ }catch(e){alert(e.message)}
 }
 async function toggleInstaller(id,value){
  try{await api("/rest/v1/installers?id=eq."+encodeURIComponent(id),{method:"PATCH",headers:{Prefer:"return=minimal"},body:JSON.stringify({is_active:value})});await refresh()}catch(e){alert(e.message)}
