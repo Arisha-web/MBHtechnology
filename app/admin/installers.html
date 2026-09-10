@@ -1,7 +1,7 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#071a35"><link rel="icon" href="../mbh-official-icon-2026.png">
-<title>MBH Installer Management v2</title>
+<title>MBH Installer Management v3</title>
 <style>
 :root{--n:#071a35;--b:#0b63ce;--g:#0d9b63;--bg:#f3f7fb;--m:#66758a}*{box-sizing:border-box}
 body{margin:0;font-family:system-ui,-apple-system,Segoe UI;background:var(--bg);color:#132238}
@@ -9,7 +9,7 @@ header{background:linear-gradient(135deg,var(--n),#0b4b96);color:#fff;padding:18
 .wrap{max-width:1100px;margin:18px auto;padding:0 14px}.box{background:#fff;padding:18px;border-radius:17px;box-shadow:0 4px 20px #173c6415;margin-bottom:14px}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 label{display:block;font-size:13px;font-weight:800;margin:10px 0 5px}input,select,textarea{width:100%;padding:12px;border:1px solid #d5e0ec;border-radius:10px;font:inherit}
-.btn{display:inline-block;border:0;background:var(--b);color:#fff;padding:11px 15px;border-radius:10px;font-weight:800;text-decoration:none;cursor:pointer}.green{background:var(--g)}.muted{color:var(--m);font-size:13px}.head{display:flex;justify-content:space-between;gap:10px;align-items:center}.tag{display:inline-block;padding:5px 9px;border-radius:20px;background:#e7f7ef;color:#087a4c;font-size:12px;font-weight:800}.off{background:#feecec;color:#a21d1d}
+.btn{display:inline-block;border:0;background:var(--b);color:#fff;padding:11px 15px;border-radius:10px;font-weight:800;text-decoration:none;cursor:pointer}.green{background:var(--g)}.muted{color:var(--m);font-size:13px}.head{display:flex;justify-content:space-between;gap:10px;align-items:center}.tag{display:inline-block;padding:5px 9px;border-radius:20px;background:#e7f7ef;color:#087a4c;font-size:12px;font-weight:800}.off{background:#feecec;color:#a21d1d}.checks{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.checks label{background:#f3f7fb;padding:10px;border-radius:10px;margin:0}.checks input{width:auto;margin-right:6px}@media(max-width:700px){.checks{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){.grid,.row{grid-template-columns:1fr}.head{align-items:flex-start;flex-wrap:wrap}}
 </style></head>
 <body><header><div class="top"><img src="../mbh-official-icon-2026.png"><div><h1>Installer Management</h1><small>MBH Operations Dashboard</small></div></div></header>
@@ -18,15 +18,16 @@ label{display:block;font-size:13px;font-weight:800;margin:10px 0 5px}input,selec
 <section class="box">
 <h3>Add New Installer</h3><p class="muted">Installer ko pehle yahan approve karein. Phir woh Installer Portal par isi email se account bana sakta hai.</p>
 <div class="grid"><div><label>Full Name</label><input id="name" placeholder="Installer name"></div><div><label>Email</label><input id="email" type="email" placeholder="installer@email.com"></div><div><label>Phone</label><input id="phone" type="tel" placeholder="03xx-xxxxxxx"></div><div><label>City / Area</label><input id="city" placeholder="Sukkur"></div></div>
-<label>Skills</label><input id="skills" placeholder="CCTV, Networking, Fiber, Electrical">
+<label>Skills</label><input id="skills" placeholder="CCTV, Networking, Fiber, Electrical"><label>Work Categories</label><div class="checks"><label><input name="cat" type="checkbox" value="cctv">CCTV</label><label><input name="cat" type="checkbox" value="network">Network/Fiber</label><label><input name="cat" type="checkbox" value="telephony">PABX/Telephony</label><label><input name="cat" type="checkbox" value="computers">Computers</label><label><input name="cat" type="checkbox" value="fire_alarm">Fire Alarm</label><label><input name="cat" type="checkbox" value="electrical">Electrical</label><label><input name="cat" type="checkbox" value="vsat">VSAT</label><label><input name="cat" type="checkbox" value="security">Security</label></div>
 <button class="btn green" style="margin-top:14px" onclick="addInstaller()">Add & Approve Installer</button><p id="msg" class="muted"></p>
 </section>
+<section><h2>Installer Acceptance – Your Approval</h2><p class="muted">Installer ke Accept karne ke baad final assignment yahan se approve karein.</p><div id="approvals"><div class="box">Loading...</div></div></section>
 <div class="grid"><section><h2>Approved Installers</h2><div id="installers"><div class="box">Loading...</div></div></section>
 <section><h2>Assign Service Requests</h2><div id="jobs"><div class="box">Loading...</div></div></section></div>
 </main>
 <script>
 const URL="https://ftwnknbheqbogeooihsg.supabase.co",KEY="sb_publishable_VS1c-OlPeswufE3ZpJa2Yg_TRDGW1YP",STORE="mbh_admin_session_v5";
-let token="",installers=[],jobs=[];
+let token="",installers=[],jobs=[],offers=[];
 const esc=x=>String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 async function api(path,options={}){
  const c=new AbortController(),t=setTimeout(()=>c.abort(),15000),headers={apikey:KEY,Authorization:"Bearer "+token,...(options.headers||{})};if(options.body)headers["Content-Type"]="application/json";
@@ -39,30 +40,38 @@ async function start(){
 }
 async function refresh(){
  try{
-  [installers,jobs]=await Promise.all([
+  [installers,jobs,offers]=await Promise.all([
    api("/rest/v1/installers?select=*&order=created_at.desc"),
-   api("/rest/v1/service_requests?select=id,ticket_no,customer_name,phone,service,location,status,installer_id&order=created_at.desc")
-  ]);renderInstallers();renderJobs();
+   api("/rest/v1/service_requests?select=id,ticket_no,customer_name,phone,service,location,status,installer_id&order=created_at.desc"),
+   api("/rest/v1/installer_job_offers?select=*&status=eq.Accepted&order=responded_at.desc")
+  ]);renderInstallers();renderJobs();renderApprovals();
  }catch(e){document.getElementById("msg").textContent=e.message}
 }
 async function addInstaller(){
  const nameEl=document.getElementById("name"),emailEl=document.getElementById("email"),phoneEl=document.getElementById("phone"),cityEl=document.getElementById("city"),skillsEl=document.getElementById("skills"),msgEl=document.getElementById("msg");
- const body={full_name:nameEl.value.trim(),email:emailEl.value.trim().toLowerCase(),phone:phoneEl.value.trim(),city:cityEl.value.trim(),skills:skillsEl.value.trim()};
+ const categories=[...document.querySelectorAll('input[name="cat"]:checked')].map(x=>x.value);\n const body={full_name:nameEl.value.trim(),email:emailEl.value.trim().toLowerCase(),phone:phoneEl.value.trim(),city:cityEl.value.trim(),skills:skillsEl.value.trim(),categories};
  if(!body.full_name||!body.email||!body.phone){msgEl.textContent="Name, email aur phone required hain.";return}
  msgEl.textContent="Adding installer...";
  try{
   await api("/rest/v1/installers",{method:"POST",headers:{Prefer:"return=minimal"},body:JSON.stringify(body)});
   msgEl.textContent="Installer approved successfully.";
-  nameEl.value="";emailEl.value="";phoneEl.value="";cityEl.value="";skillsEl.value="";
+  nameEl.value="";emailEl.value="";phoneEl.value="";cityEl.value="";skillsEl.value="";document.querySelectorAll('input[name="cat"]').forEach(x=>x.checked=false);
   await refresh();
  }catch(e){msgEl.textContent="Error: "+e.message}
 }
 function renderInstallers(){
  installersEl=document.getElementById("installers");
- installersEl.innerHTML=installers.length?installers.map(i=>'<article class="box"><div class="head"><strong>'+esc(i.full_name)+'</strong><span class="tag '+(i.is_active?"":"off")+'">'+(i.is_active?"Active":"Inactive")+'</span></div><p>'+esc(i.phone)+'<br>'+esc(i.email)+'</p><p class="muted">'+esc(i.city||"")+" · "+esc(i.skills||"No skills added")+'</p><button class="btn" onclick="toggleInstaller(\''+i.id+'\','+(!i.is_active)+')">'+(i.is_active?"Deactivate":"Activate")+'</button></article>').join(""):'<div class="box">No installers added.</div>';
+ installersEl.innerHTML=installers.length?installers.map(i=>'<article class="box"><div class="head"><strong>'+esc(i.full_name)+'</strong><span class="tag '+(i.is_active?"":"off")+'">'+(i.is_active?"Active":"Inactive")+'</span></div><p>'+esc(i.phone)+'<br>'+esc(i.email)+'</p><p class="muted">'+esc(i.city||"")+" · "+esc((i.categories||[]).join(", ")||i.skills||"No skills added")+'</p><button class="btn" onclick="toggleInstaller(\''+i.id+'\','+(!i.is_active)+')">'+(i.is_active?"Deactivate":"Activate")+'</button></article>').join(""):'<div class="box">No installers added.</div>';
 }
 async function toggleInstaller(id,value){
  try{await api("/rest/v1/installers?id=eq."+encodeURIComponent(id),{method:"PATCH",headers:{Prefer:"return=minimal"},body:JSON.stringify({is_active:value})});await refresh()}catch(e){alert(e.message)}
+}
+function renderApprovals(){
+ const el=document.getElementById("approvals");
+ el.innerHTML=offers.length?offers.map(o=>{const i=installers.find(x=>x.id===o.installer_id)||{},j=jobs.find(x=>x.id===o.request_id)||{};return '<article class="box"><div class="head"><div><strong>'+esc(j.ticket_no||"Request")+' · '+esc(j.customer_name||"Customer")+'</strong><p class="muted">'+esc(j.service||"")+' · '+esc(j.location||"")+'</p><b>'+esc(i.full_name||"Installer")+'</b> has accepted this job.</div><button class="btn green" onclick="approveOffer(\''+o.id+'\')">Approve Assignment</button></div></article>'}).join(""):'<div class="box">No installer approvals pending.</div>';
+}
+async function approveOffer(id){
+ try{await api("/rest/v1/rpc/admin_approve_installer_offer",{method:"POST",body:JSON.stringify({p_offer_id:id})});alert("Installer assignment approved.");await refresh()}catch(e){alert(e.message)}
 }
 function renderJobs(){
  const active=installers.filter(i=>i.is_active);
