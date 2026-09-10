@@ -27,7 +27,7 @@ label{display:block;font-size:13px;font-weight:800;margin:10px 0 5px}input,selec
 </main>
 <script>
 const URL="https://ftwnknbheqbogeooihsg.supabase.co",KEY="sb_publishable_VS1c-OlPeswufE3ZpJa2Yg_TRDGW1YP",STORE="mbh_admin_session_v5";
-let token="",installers=[],jobs=[],offers=[];
+let token="",installers=[],jobs=[],offers=[];const categoryOptions=[["cctv","CCTV"],["network","Network/Fiber"],["telephony","PABX/Telephony"],["computers","Computers"],["fire_alarm","Fire Alarm"],["electrical","Electrical"],["vsat","VSAT"],["security","Security"]];
 const esc=x=>String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 async function api(path,options={}){
  const c=new AbortController(),t=setTimeout(()=>c.abort(),15000),headers={apikey:KEY,Authorization:"Bearer "+token,...(options.headers||{})};if(options.body)headers["Content-Type"]="application/json";
@@ -62,7 +62,12 @@ async function addInstaller(){
 }
 function renderInstallers(){
  installersEl=document.getElementById("installers");
- installersEl.innerHTML=installers.length?installers.map(i=>'<article class="box"><div class="head"><strong>'+esc(i.full_name)+'</strong><span class="tag '+(i.is_active?"":"off")+'">'+(i.is_active?"Active":"Inactive")+'</span></div><p>'+esc(i.phone)+'<br>'+esc(i.email)+'</p><p class="muted">'+esc(i.city||"")+" · "+esc((i.categories||[]).join(", ")||i.skills||"No skills added")+'</p><button class="btn" onclick="toggleInstaller(\''+i.id+'\','+(!i.is_active)+')">'+(i.is_active?"Deactivate":"Activate")+'</button></article>').join(""):'<div class="box">No installers added.</div>';
+ installersEl.innerHTML=installers.length?installers.map(i=>'<article class="box"><div class="head"><strong>'+esc(i.full_name)+'</strong><span class="tag '+(i.is_active?"":"off")+'">'+(i.is_active?"Active":"Inactive")+'</span></div><p>'+esc(i.phone)+'<br>'+esc(i.email)+'</p><p class="muted">'+esc(i.city||"")+" · "+esc(i.skills||"No skills added")+'</p><label>Notification Categories</label><select id="cats_'+i.id+'" multiple size="5">'+categoryOptions.map(c=>'<option value="'+c[0]+'" '+((i.categories||[]).includes(c[0])?"selected":"")+'>'+c[1]+'</option>').join("")+'</select><div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn green" onclick="saveCategories(\''+i.id+'\')">Save Categories</button><button class="btn" onclick="toggleInstaller(\''+i.id+'\','+(!i.is_active)+')">'+(i.is_active?"Deactivate":"Activate")+'</button></div></article>').join(""):'<div class="box">No installers added.</div>';
+}
+async function saveCategories(id){
+ const el=document.getElementById("cats_"+id),categories=[...el.selectedOptions].map(x=>x.value);
+ if(!categories.length){alert("Kam az kam ek category select karein.");return}
+ try{await api("/rest/v1/installers?id=eq."+encodeURIComponent(id),{method:"PATCH",headers:{Prefer:"return=minimal"},body:JSON.stringify({categories})});alert("Notification categories saved.");await refresh()}catch(e){alert(e.message)}
 }
 async function toggleInstaller(id,value){
  try{await api("/rest/v1/installers?id=eq."+encodeURIComponent(id),{method:"PATCH",headers:{Prefer:"return=minimal"},body:JSON.stringify({is_active:value})});await refresh()}catch(e){alert(e.message)}
