@@ -49,7 +49,8 @@ async function refresh(){
 }
 async function addInstaller(){
  const nameEl=document.getElementById("name"),emailEl=document.getElementById("email"),phoneEl=document.getElementById("phone"),cityEl=document.getElementById("city"),skillsEl=document.getElementById("skills"),msgEl=document.getElementById("msg");
- const categories=[...document.querySelectorAll('input[name="cat"]:checked')].map(x=>x.value);\n const body={full_name:nameEl.value.trim(),email:emailEl.value.trim().toLowerCase(),phone:phoneEl.value.trim(),city:cityEl.value.trim(),skills:skillsEl.value.trim(),categories};
+ const categories=[...document.querySelectorAll('input[name="cat"]:checked')].map(x=>x.value);
+ const body={full_name:nameEl.value.trim(),email:emailEl.value.trim().toLowerCase(),phone:phoneEl.value.trim(),city:cityEl.value.trim(),skills:skillsEl.value.trim(),categories};
  if(!body.full_name||!body.email||!body.phone){msgEl.textContent="Name, email aur phone required hain.";return}
  msgEl.textContent="Adding installer...";
  try{
