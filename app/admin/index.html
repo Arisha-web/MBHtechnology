@@ -1,12 +1,63 @@
-<!doctype html><html><head><meta name="deployment-trigger-20260910" content="dashboard-v2"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#071a35"><link rel="icon" href="./mbh-official-icon-2026.png"><title>MBH Admin Dashboard</title><style>:root{--n:#071a35;--b:#0b63ce;--c:#22b8f0;--bg:#f3f7fb;--m:#66758a}*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI;background:var(--bg);color:#132238}header{background:linear-gradient(135deg,var(--n),#0b4b96);color:#fff;padding:20px}.top{max-width:1100px;margin:auto;display:flex;align-items:center;gap:12px}.top img{width:55px;border-radius:14px}.top h1{margin:0;font-size:22px}.wrap{max-width:1100px;margin:20px auto;padding:0 14px}.box,.stat{background:#fff;padding:18px;border-radius:17px;box-shadow:0 4px 20px #173c6415;margin-bottom:14px}.login{max-width:440px;margin:50px auto}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{text-align:center}.stat b{display:block;color:var(--b);font-size:28px}label{display:block;font-size:13px;font-weight:800;margin:11px 0 5px}input,select,textarea{width:100%;padding:12px;border:1px solid #d5e0ec;border-radius:10px;font:inherit}.btn{border:0;background:var(--b);color:#fff;padding:12px 16px;border-radius:10px;font-weight:800;cursor:pointer}.wide{width:100%;margin-top:14px}.muted{color:var(--m);font-size:13px}.hidden{display:none}.ticket{border-left:4px solid var(--c)}.row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.tag{display:inline-block;background:#e7f7ef;color:#087a4c;padding:5px 9px;border-radius:20px;font-size:11px;font-weight:800}.headrow{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}@media(max-width:650px){.row{grid-template-columns:1fr}.stats{grid-template-columns:repeat(3,1fr)}.top h1{font-size:18px}}</style></head><body><header><div class="top"><img src="./mbh-official-icon-2026.png"><div><h1>MBH Operations Dashboard</h1><small>Secure staff access</small></div></div></header><main class="wrap"><section id="login" class="box login"><h2>Admin Login</h2><p class="muted">Apne authorized MBH email aur password se login karein.</p><label>Email</label><input id="email" type="email" placeholder="Your admin email"><label>Password</label><input id="password" type="password" minlength="8" placeholder="Minimum 8 characters"><button class="btn wide" onclick="login()">Login</button><button class="btn wide" style="background:#0d9b63" onclick="signup()">First Time: Create Admin Account</button><p id="loginMsg" class="muted"></p></section><section id="dash" class="hidden"><div class="headrow"><h2>Service Requests</h2><button class="btn" onclick="logout()">Logout</button></div><div class="stats"><div class="stat"><b id="total">0</b>Total</div><div class="stat"><b id="open">0</b>Open</div><div class="stat"><b id="done">0</b>Done</div></div><div class="box"><label>Search</label><input id="search" placeholder="Ticket, customer, phone or service" oninput="render()"></div><div id="list"></div></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
-const URL="https://ftwnknbheqbogeooihsg.supabase.co",KEY="sb_publishable_VS1c-OlPeswufE3ZpJa2Yg_TRDGW1YP",db=window.supabase.createClient(URL,KEY);let rows=[];
+<!doctype html><html><head><meta name="deployment-trigger-20260910" content="dashboard-v5"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#071a35"><link rel="icon" href="../mbh-official-icon-2026.png"><title>MBH Admin Dashboard</title><style>:root{--n:#071a35;--b:#0b63ce;--c:#22b8f0;--bg:#f3f7fb;--m:#66758a}*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI;background:var(--bg);color:#132238}header{background:linear-gradient(135deg,var(--n),#0b4b96);color:#fff;padding:20px}.top{max-width:1100px;margin:auto;display:flex;align-items:center;gap:12px}.top img{width:55px;border-radius:14px}.top h1{margin:0;font-size:22px}.wrap{max-width:1100px;margin:20px auto;padding:0 14px}.box,.stat{background:#fff;padding:18px;border-radius:17px;box-shadow:0 4px 20px #173c6415;margin-bottom:14px}.login{max-width:440px;margin:50px auto}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{text-align:center}.stat b{display:block;color:var(--b);font-size:28px}label{display:block;font-size:13px;font-weight:800;margin:11px 0 5px}input,select,textarea{width:100%;padding:12px;border:1px solid #d5e0ec;border-radius:10px;font:inherit}.btn{border:0;background:var(--b);color:#fff;padding:12px 16px;border-radius:10px;font-weight:800;cursor:pointer}.wide{width:100%;margin-top:14px}.muted{color:var(--m);font-size:13px}.hidden{display:none}.ticket{border-left:4px solid var(--c)}.row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.tag{display:inline-block;background:#e7f7ef;color:#087a4c;padding:5px 9px;border-radius:20px;font-size:11px;font-weight:800}.headrow{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}@media(max-width:650px){.row{grid-template-columns:1fr}.stats{grid-template-columns:repeat(3,1fr)}.top h1{font-size:18px}}</style></head><body><header><div class="top"><img src="../mbh-official-icon-2026.png"><div><h1>MBH Operations Dashboard</h1><small>Secure staff access</small></div></div></header><main class="wrap"><section id="login" class="box login"><h2>Admin Login</h2><p class="muted">Apne authorized MBH email aur password se login karein.</p><label>Email</label><input id="email" type="email" placeholder="Your admin email"><label>Password</label><input id="password" type="password" minlength="8" placeholder="Minimum 8 characters"><button class="btn wide" onclick="login()">Login</button><p class="muted" style="text-align:center">Owner account active · Secure login</p><p id="loginMsg" class="muted"></p></section><section id="dash" class="hidden"><div class="headrow"><h2>Service Requests</h2><button class="btn" onclick="logout()">Logout</button></div><div class="stats"><div class="stat"><b id="total">0</b>Total</div><div class="stat"><b id="open">0</b>Open</div><div class="stat"><b id="done">0</b>Done</div></div><div class="box"><label>Search</label><input id="search" placeholder="Ticket, customer, phone or service" oninput="render()"></div><div id="list"></div></section></main><script>
+const URL="https://ftwnknbheqbogeooihsg.supabase.co";
+const KEY="sb_publishable_VS1c-OlPeswufE3ZpJa2Yg_TRDGW1YP";
+const STORE="mbh_admin_session_v5";
+let accessToken="",rows=[];
 const esc=x=>String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 function msg(t){document.getElementById("loginMsg").textContent=t}
-async function login(){const email=document.getElementById("email").value.trim(),password=document.getElementById("password").value;if(!email||password.length<8)return msg("Enter valid email and minimum 8-character password");msg("Logging in...");const {error}=await db.auth.signInWithPassword({email,password});msg(error?error.message:"Login successful")}
-async function signup(){const email=document.getElementById("email").value.trim(),password=document.getElementById("password").value;if(!email||password.length<8)return msg("Enter valid email and minimum 8-character password");msg("Creating account...");const {data,error}=await db.auth.signUp({email,password,options:{emailRedirectTo:location.origin+"/app/admin/"}});if(error)return msg(error.message);msg(data.session?"Account created and logged in.":"Confirmation email sent. Open it once, then login with your password.")}
-async function logout(){await db.auth.signOut();location.reload()}
-async function load(){const {data,error}=await db.from("service_requests").select("*").order("created_at",{ascending:false});if(error){document.getElementById("list").innerHTML='<div class="box">'+esc(error.message)+'</div>';return}rows=data||[];render()}
-function render(){const q=(document.getElementById("search").value||"").toLowerCase(),a=rows.filter(x=>JSON.stringify(x).toLowerCase().includes(q));document.getElementById("total").textContent=rows.length;document.getElementById("open").textContent=rows.filter(x=>x.status!=="Completed").length;document.getElementById("done").textContent=rows.filter(x=>x.status==="Completed").length;document.getElementById("list").innerHTML=a.length?a.map(t=>'<article class="box ticket"><span class="tag">'+esc(t.status)+'</span><h3>'+esc(t.ticket_no)+' · '+esc(t.customer_name)+'</h3><p class="muted">'+esc(t.phone)+' · '+esc(t.location)+'<br>'+esc(t.service)+' — '+esc(t.request_type)+'</p><p>'+esc(t.details)+'</p><div class="row"><div><label>Status</label><select onchange="updateReq(\''+t.id+'\',\'status\',this.value)">'+["Received","Survey Scheduled","Quotation Sent","Technician Assigned","Work in Progress","Completed"].map(x=>'<option '+(x===t.status?"selected":"")+'>'+x+'</option>').join("")+'</select></div><div><label>Technician</label><input value="'+esc(t.technician)+'" onchange="updateReq(\''+t.id+'\',\'technician\',this.value)"></div><div><label>Quotation PKR</label><input type="number" value="'+Number(t.quote_amount||0)+'" onchange="updateReq(\''+t.id+'\',\'quote_amount\',+this.value)"></div></div></article>').join(""):'<div class="box">No requests found.</div>'}
-async function updateReq(id,k,v){const body={};body[k]=v;body.updated_at=new Date().toISOString();const {error}=await db.from("service_requests").update(body).eq("id",id);if(error)alert(error.message);else load()}
-db.auth.onAuthStateChange((e,s)=>{if(s){document.getElementById("login").classList.add("hidden");document.getElementById("dash").classList.remove("hidden");load()}else{document.getElementById("login").classList.remove("hidden");document.getElementById("dash").classList.add("hidden")}});db.auth.getSession().then(({data})=>{if(data.session){document.getElementById("login").classList.add("hidden");document.getElementById("dash").classList.remove("hidden");load()}});
+function showDash(){document.getElementById("login").classList.add("hidden");document.getElementById("dash").classList.remove("hidden")}
+function showLogin(){document.getElementById("login").classList.remove("hidden");document.getElementById("dash").classList.add("hidden")}
+async function api(path,options={}){
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
+  const headers={apikey:KEY,Authorization:"Bearer "+(accessToken||KEY),...(options.headers||{})};
+  if(options.body)headers["Content-Type"]="application/json";
+  try{
+    const response=await fetch(URL+path,{...options,headers,signal:controller.signal});
+    const raw=await response.text();let data=null;
+    try{data=raw?JSON.parse(raw):null}catch{data=raw}
+    if(!response.ok)throw new Error(data?.msg||data?.message||data?.error_description||data?.error||("Request failed ("+response.status+")"));
+    return data;
+  }catch(error){
+    if(error.name==="AbortError")throw new Error("Connection timed out. Please try again.");
+    throw error;
+  }finally{clearTimeout(timer)}
+}
+async function login(){
+  const email=document.getElementById("email").value.trim(),password=document.getElementById("password").value;
+  if(!email||password.length<8)return msg("Enter valid email and minimum 8-character password");
+  msg("Logging in...");
+  try{
+    const data=await api("/auth/v1/token?grant_type=password",{method:"POST",body:JSON.stringify({email,password})});
+    accessToken=data.access_token;
+    localStorage.setItem(STORE,JSON.stringify({access_token:data.access_token,refresh_token:data.refresh_token}));
+    msg("");showDash();await load();
+  }catch(error){msg(error.message)}
+}
+function logout(){localStorage.removeItem(STORE);accessToken="";showLogin();msg("Logged out.")}
+async function load(){
+  document.getElementById("list").innerHTML='<div class="box">Loading requests...</div>';
+  try{rows=await api("/rest/v1/service_requests?select=*&order=created_at.desc")||[];render()}
+  catch(error){document.getElementById("list").innerHTML='<div class="box">'+esc(error.message)+'</div>'}
+}
+function render(){
+  const q=(document.getElementById("search").value||"").toLowerCase(),a=rows.filter(x=>JSON.stringify(x).toLowerCase().includes(q));
+  document.getElementById("total").textContent=rows.length;
+  document.getElementById("open").textContent=rows.filter(x=>x.status!=="Completed").length;
+  document.getElementById("done").textContent=rows.filter(x=>x.status==="Completed").length;
+  document.getElementById("list").innerHTML=a.length?a.map(t=>'<article class="box ticket"><span class="tag">'+esc(t.status)+'</span><h3>'+esc(t.ticket_no)+' · '+esc(t.customer_name)+'</h3><p class="muted">'+esc(t.phone)+' · '+esc(t.location)+'<br>'+esc(t.service)+' — '+esc(t.request_type)+'</p><p>'+esc(t.details)+'</p><div class="row"><div><label>Status</label><select onchange="updateReq(\''+t.id+'\',\'status\',this.value)">'+["Received","Survey Scheduled","Quotation Sent","Technician Assigned","Work in Progress","Completed"].map(x=>'<option '+(x===t.status?"selected":"")+'>'+x+'</option>').join("")+'</select></div><div><label>Technician</label><input value="'+esc(t.technician)+'" onchange="updateReq(\''+t.id+'\',\'technician\',this.value)"></div><div><label>Quotation PKR</label><input type="number" value="'+Number(t.quote_amount||0)+'" onchange="updateReq(\''+t.id+'\',\'quote_amount\',+this.value)"></div></div></article>').join(""):'<div class="box">No requests found.</div>';
+}
+async function updateReq(id,key,value){
+  const body={[key]:value,updated_at:new Date().toISOString()};
+  try{await api("/rest/v1/service_requests?id=eq."+encodeURIComponent(id),{method:"PATCH",headers:{Prefer:"return=minimal"},body:JSON.stringify(body)});await load()}
+  catch(error){alert(error.message)}
+}
+(async()=>{
+  try{
+    const saved=JSON.parse(localStorage.getItem(STORE)||"null");
+    if(!saved?.access_token)return;
+    accessToken=saved.access_token;
+    await api("/auth/v1/user");
+    showDash();await load();
+  }catch{localStorage.removeItem(STORE);accessToken="";showLogin()}
+})();
 </script></body></html>
