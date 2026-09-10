@@ -1,7 +1,7 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#071a35"><link rel="icon" href="../mbh-official-icon-2026.png">
-<title>MBH Installer Management</title>
+<title>MBH Installer Management v2</title>
 <style>
 :root{--n:#071a35;--b:#0b63ce;--g:#0d9b63;--bg:#f3f7fb;--m:#66758a}*{box-sizing:border-box}
 body{margin:0;font-family:system-ui,-apple-system,Segoe UI;background:var(--bg);color:#132238}
@@ -46,11 +46,16 @@ async function refresh(){
  }catch(e){document.getElementById("msg").textContent=e.message}
 }
 async function addInstaller(){
- const body={full_name:name.value.trim(),email:email.value.trim().toLowerCase(),phone:phone.value.trim(),city:city.value.trim(),skills:skills.value.trim()};
- if(!body.full_name||!body.email||!body.phone){msg.textContent="Name, email aur phone required hain.";return}
- msg.textContent="Adding installer...";
- try{await api("/rest/v1/installers",{method:"POST",headers:{Prefer:"return=minimal"},body:JSON.stringify(body)});msg.textContent="Installer approved successfully.";name.value=email.value=phone.value=city.value=skills.value="";await refresh()}
- catch(e){msg.textContent=e.message}
+ const nameEl=document.getElementById("name"),emailEl=document.getElementById("email"),phoneEl=document.getElementById("phone"),cityEl=document.getElementById("city"),skillsEl=document.getElementById("skills"),msgEl=document.getElementById("msg");
+ const body={full_name:nameEl.value.trim(),email:emailEl.value.trim().toLowerCase(),phone:phoneEl.value.trim(),city:cityEl.value.trim(),skills:skillsEl.value.trim()};
+ if(!body.full_name||!body.email||!body.phone){msgEl.textContent="Name, email aur phone required hain.";return}
+ msgEl.textContent="Adding installer...";
+ try{
+  await api("/rest/v1/installers",{method:"POST",headers:{Prefer:"return=minimal"},body:JSON.stringify(body)});
+  msgEl.textContent="Installer approved successfully.";
+  nameEl.value="";emailEl.value="";phoneEl.value="";cityEl.value="";skillsEl.value="";
+  await refresh();
+ }catch(e){msgEl.textContent="Error: "+e.message}
 }
 function renderInstallers(){
  installersEl=document.getElementById("installers");
