@@ -31,7 +31,7 @@ function showTab(id){document.querySelectorAll(".nav button,.panel").forEach(x=>
 function selectService(i){r.value=services[i][1];showTab("request")}
 function estimate(){const s=services[+q.value],qty=Math.max(1,+document.getElementById("qQty").value||1),total=s[2]*qty;document.getElementById("estimateResult").innerHTML='<span class="small">Indicative total</span><div class="price">PKR '+total.toLocaleString()+'</div><span class="small">Final price after site survey and specifications.</span>'}
 document.getElementById("requestForm").onsubmit=async e=>{e.preventDefault();const btn=e.target.querySelector("button"),f=Object.fromEntries(new FormData(e.target));btn.disabled=true;btn.textContent="Submitting...";const {data,error}=await db.rpc("create_service_request",{p_customer_name:f.name,p_phone:f.phone,p_location:f.location,p_service:f.service,p_request_type:f.type,p_details:f.details});btn.disabled=false;btn.textContent="Submit Request";if(error){alert("Setup pending: "+error.message);return}const x=data[0];
-trackMBHEvent("service_request_submitted",{service_category:f.service,request_type:f.type});
+trackMBHEvent("service_request_submitted",{service_category:f.service,request_type:f.type});trackMBHEvent("qualify_lead",{lead_type:"service_request"});
 if(/complaint|repair/i.test(f.type))trackMBHEvent("complaint_submitted",{service_category:f.service});
 if(/quotation/i.test(f.type))trackMBHEvent("quotation_requested",{service_category:f.service,source:"service_request"});
 if(!localStorage.getItem("mbh_customer_registered")){trackMBHEvent("customer_registration",{registration_method:"first_service_request"});localStorage.setItem("mbh_customer_registered","1")}
