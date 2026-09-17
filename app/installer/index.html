@@ -1,6 +1,14 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#071a35"><link rel="icon" href="../mbh-official-icon-2026.png"><title>MBH Installer Portal v2</title>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-E9ZEDM9PDZ"></script>
+<script>
+window.dataLayer=window.dataLayer||[];
+function gtag(){dataLayer.push(arguments)}
+gtag("js",new Date());
+gtag("config","G-E9ZEDM9PDZ",{send_page_view:true});
+function trackMBHEvent(name,params={}){gtag("event",name,{event_category:"MBH Service App",transport_type:"beacon",...params})}
+</script>
 <style>
 :root{--n:#071a35;--b:#0b63ce;--g:#0d9b63;--bg:#f3f7fb;--m:#66758a}*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI;background:var(--bg);color:#132238}
 header{background:linear-gradient(135deg,var(--n),#0b4b96);color:#fff;padding:18px}.top{max-width:760px;margin:auto;display:flex;align-items:center;gap:12px}.top img{width:54px;border-radius:14px}.top h1{margin:0;font-size:21px}
@@ -34,7 +42,7 @@ async function login(){
 async function signup(){
  const e=email.value.trim(),p=password.value;if(!e||p.length<8)return note("Valid email aur minimum 8-character password enter karein.");
  note("Creating installer account...");
- try{const d=await api("/auth/v1/signup",{method:"POST",body:JSON.stringify({email:e,password:p})});if(d.access_token){token=d.access_token;localStorage.setItem(STORE,JSON.stringify({access_token:d.access_token,refresh_token:d.refresh_token}));await openPortal()}else note("Confirmation email sent. Confirm karke phir Login karein.")}
+ try{const d=await api("/auth/v1/signup",{method:"POST",body:JSON.stringify({email:e,password:p})});trackMBHEvent("installer_registration",{registration_method:"email"});if(d.access_token){token=d.access_token;localStorage.setItem(STORE,JSON.stringify({access_token:d.access_token,refresh_token:d.refresh_token}));await openPortal()}else note("Confirmation email sent. Confirm karke phir Login karein.")}
  catch(x){note(x.message)}
 }
 async function openPortal(){
