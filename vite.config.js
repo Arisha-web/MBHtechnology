@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  base: '/MBHtechnology/'   // <-- yahan apni repo name dalna
+  // The site is served from the custom domain root.
+  base: '/'
 })
-
 
