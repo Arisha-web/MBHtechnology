@@ -48,7 +48,7 @@ function App() {
           <span><strong>MBH TECHNOLOGY</strong><small>IT & Telecom Solutions</small></span>
         </a>
         <nav className={menuOpen ? "nav nav--open" : "nav"} aria-label="Main navigation">
-          <a href="#home" onClick={closeMenu}>Home</a><a href="#services" onClick={closeMenu}>Services</a><a href="#about" onClick={closeMenu}>About</a><a href="/portfolio/" onClick={closeMenu}>Portfolio</a><a href="#apps" onClick={closeMenu}>Service App</a><a href="#contact" onClick={closeMenu}>Contact</a>
+          <a href="#home" onClick={closeMenu}>Home</a><a href="#services" onClick={closeMenu}>Services</a><a href="#about" onClick={closeMenu}>About</a><a href="/portfolio/" onClick={closeMenu}>Portfolio</a><a href="/vendors/" onClick={closeMenu}>Vendors</a><a href="#apps" onClick={closeMenu}>Service App</a><a href="#contact" onClick={closeMenu}>Contact</a>
           <a className="nav-cta" href="/app/quotation/">Get a Quote <ArrowRight size={16} /></a>
         </nav>
         <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">{menuOpen ? <X /> : <Menu />}</button>
@@ -74,7 +74,7 @@ function App() {
 
         <section className="section services-section" id="services">
           <div className="section-heading"><div><span className="section-kicker">What we deliver</span><h2>Integrated technology solutions</h2></div><p>One accountable engineering partner for design, procurement, deployment, testing and long-term support.</p></div>
-          <div className="service-grid">{services.map(({ icon: Icon, title, text }, index) => <article className="service-card" key={title}><div className="service-number">0{index + 1}</div><div className="icon-box"><Icon /></div><h3>{title}</h3><p>{text}</p><a href="/app/quotation/">Request solution <ArrowRight size={16} /></a></article>)}</div>
+          <div className="service-grid">{services.map((service, index) => { const ServiceIcon = service.icon; return <article className="service-card" key={service.title}><div className="service-number">0{index + 1}</div><div className="icon-box"><ServiceIcon /></div><h3>{service.title}</h3><p>{service.text}</p><a href="/app/quotation/">Request solution <ArrowRight size={16} /></a></article>; })}</div>
         </section>
 
         <section className="section about-section" id="about">
@@ -85,14 +85,14 @@ function App() {
         <section className="portfolio-section" id="portfolio"><div className="section portfolio-inner"><div className="section-heading light"><div><span className="section-kicker">Experience that matters</span><h2>Trusted across critical sectors</h2></div><p>From secure facilities and campuses to retail networks and remote industrial sites.</p></div><div className="sector-grid">{sectors.map((sector, i) => <div className="sector-card" key={sector}><span>0{i + 1}</span><strong>{sector}</strong></div>)}</div><div className="portfolio-note"><div><Headphones /><span><strong>End-to-end ownership</strong><small>Survey → Design → Supply → Install → Support</small></span></div><a className="button button-silver" href="/portfolio/">View Company Portfolio <ArrowRight size={18} /></a></div></div></section>
 
         <section className="section app-section" id="apps">
-          <div className="app-copy"><span className="section-kicker">MBH Digital Service Desk</span><h2>Your service operation, now online.</h2><p>Customers can submit complaints, request quotations and track jobs. Approved installers receive category-based field opportunities through their dedicated portal.</p><div className="app-actions"><a className="button button-primary" href="/app/"><Smartphone size={18} /> Open Customer App</a><a className="button button-outline" href="/app/installer/"><ShieldCheck size={18} /> Installer Portal</a></div></div>
+          <div className="app-copy"><span className="section-kicker">MBH Digital Service Desk</span><h2>Your service operation, now online.</h2><p>Customers can submit complaints, request quotations and track jobs. Approved installers receive category-based field opportunities, while suppliers can apply through the vendor portal.</p><div className="app-actions"><a className="button button-primary" href="/app/"><Smartphone size={18} /> Open Customer App</a><a className="button button-outline" href="/app/installer/"><ShieldCheck size={18} /> Installer Portal</a><a className="button button-outline" href="/vendors/"><Building2 size={18} /> Vendor Registration</a></div></div>
           <div className="phone-stage"><div className="phone phone-back"><div className="phone-screen"><span>Installer Portal</span><div className="mini-card" /><div className="mini-card" /><div className="mini-card" /></div></div><div className="phone"><div className="phone-screen customer"><img src="/app/mbh-official-icon-2026.png" alt="" /><strong>MBH Service Desk</strong><span>Request. Track. Resolve.</span><div className="app-pill">Customer services online</div></div></div></div>
         </section>
 
         <section className="contact-section" id="contact"><div className="contact-copy"><span className="section-kicker">Start a conversation</span><h2>Have a site, network or security challenge?</h2><p>Tell us what you need. Our engineering team will help plan the right solution.</p></div><div className="contact-actions"><a className="button button-silver" href="https://wa.me/923145802313" target="_blank" rel="noreferrer">WhatsApp MBH <ArrowRight size={18} /></a><a className="contact-email" href="mailto:Ramiz1987@gmail.com">Ramiz1987@gmail.com</a></div></section>
       </main>
 
-      <footer className="footer"><div className="footer-brand"><img src="/app/mbh-official-icon-2026.png" alt="MBH" /><span><strong>MBH TECHNOLOGY</strong><small>IT & Telecom Solutions · Pakistan</small></span></div><div className="footer-links"><a href="#services">Services</a><a href="/portfolio/">Portfolio</a><a href="/app/">Customer App</a><a href="/app/installer/">Installer Portal</a></div><p>© {new Date().getFullYear()} MBH Technology. All rights reserved.</p></footer>
+      <footer className="footer"><div className="footer-brand"><img src="/app/mbh-official-icon-2026.png" alt="MBH" /><span><strong>MBH TECHNOLOGY</strong><small>IT & Telecom Solutions · Pakistan</small></span></div><div className="footer-links"><a href="#services">Services</a><a href="/portfolio/">Portfolio</a><a href="/vendors/">Vendors</a><a href="/app/">Customer App</a><a href="/app/installer/">Installer Portal</a></div><p>© {new Date().getFullYear()} MBH Technology Pakistan. All rights reserved.</p></footer>
     </div>
   );
 }
