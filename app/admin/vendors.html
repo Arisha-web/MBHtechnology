@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#071a35">
+  <link rel="icon" href="../mbh-official-icon-2026.png">
+  <title>Vendor Applications | MBH Technology Pakistan</title>
+  <style>
+    :root{--n:#071a35;--b:#0b63ce;--g:#0d9b63;--p:#7b4bb7;--r:#b42318;--bg:#f3f7fb;--m:#66758a}*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:#132238}header{background:linear-gradient(135deg,var(--n),#0b4b96);color:#fff;padding:18px}.top{max-width:1150px;margin:auto;display:flex;gap:12px;align-items:center}.top img{width:54px;border-radius:14px}.top h1{margin:0;font-size:21px}.wrap{max-width:1150px;margin:18px auto;padding:0 14px}.box,.stat{background:#fff;padding:17px;border-radius:17px;box-shadow:0 4px 20px #173c6415;margin-bottom:14px}.head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{text-align:center}.stat b{display:block;color:var(--b);font-size:27px}.controls{display:grid;grid-template-columns:2fr 1fr;gap:10px}.btn{border:0;background:var(--b);color:#fff;padding:11px 15px;border-radius:10px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-block}.green{background:var(--g)}.purple{background:var(--p)}.red{background:var(--r)}.muted{color:var(--m);font-size:13px}input,select{width:100%;padding:11px;border:1px solid #d5e0ec;border-radius:10px;font:inherit}.vendor{border-left:4px solid var(--p)}.vendor h3{margin:8px 0}.meta{line-height:1.7}.details{white-space:pre-wrap;background:#f7f9fc;border-radius:10px;padding:12px;line-height:1.55;font-size:13px}.tag{display:inline-block;background:#efe8f8;color:#65389e;padding:5px 9px;border-radius:20px;font-size:11px;font-weight:800}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.actions .btn{padding:9px 12px;font-size:12px}@media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}.controls{grid-template-columns:1fr}.head{align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <header><div class="top"><img src="../mbh-official-icon-2026.png" alt="MBH"><div><h1>Vendor Management</h1><small>MBH Technology Pakistan · Admin Review</small></div></div></header>
+  <main class="wrap">
+    <div class="head"><div><h2>Vendor Applications</h2><p class="muted">Review and update registrations received from the website.</p></div><a class="btn" href="./">← Dashboard</a></div>
+    <section class="stats"><div class="stat"><b id="total">0</b>Total</div><div class="stat"><b id="pending">0</b>Pending</div><div class="stat"><b id="approved">0</b>Approved</div><div class="stat"><b id="rejected">0</b>Rejected</div></section>
+    <section class="box controls"><input id="search" placeholder="Search company, phone, category or city" oninput="render()"><select id="filter" onchange="render()"><option value="">All statuses</option><option>Received</option><option>Under Review</option><option>Approved</option><option>Rejected</option></select></section>
+    <div id="list"><div class="box">Loading vendor applications...</div></div>
+  </main>
+  <script>
+    const URL="https://ftwnknbheqbogeooihsg.supabase.co",KEY="sb_publishable_VS1c-OlPeswufE3ZpJa2Yg_TRDGW1YP",STORE="mbh_admin_session_v5";let token="",rows=[];
+    const esc=x=>String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+    async function api(path,options={}){const c=new AbortController(),timer=setTimeout(()=>c.abort(),15000),headers={apikey:KEY,Authorization:"Bearer "+token,...(options.headers||{})};if(options.body)headers["Content-Type"]="application/json";try{const r=await fetch(URL+path,{...options,headers,signal:c.signal}),raw=await r.text();let data;try{data=raw?JSON.parse(raw):null}catch{data=raw}if(!r.ok)throw new Error(data?.message||data?.hint||data?.error||("Request failed "+r.status));return data}catch(e){if(e.name==="AbortError")throw new Error("Connection timed out");throw e}finally{clearTimeout(timer)}}
+    async function start(){const saved=JSON.parse(localStorage.getItem(STORE)||"null");if(!saved?.access_token){location.href="./";return}token=saved.access_token;try{await api("/auth/v1/user");await load()}catch{localStorage.removeItem(STORE);location.href="./"}}
+    async function load(){document.getElementById("list").innerHTML='<div class="box">Loading vendor applications...</div>';try{rows=await api("/rest/v1/service_requests?select=*&service=eq.Vendor%20Registration&order=created_at.desc")||[];render()}catch(e){document.getElementById("list").innerHTML='<div class="box">'+esc(e.message)+'</div>'}}
+    function render(){const q=document.getElementById("search").value.toLowerCase(),status=document.getElementById("filter").value;const view=rows.filter(x=>(!status||x.status===status)&&JSON.stringify(x).toLowerCase().includes(q));document.getElementById("total").textContent=rows.length;document.getElementById("pending").textContent=rows.filter(x=>!["Approved","Rejected"].includes(x.status)).length;document.getElementById("approved").textContent=rows.filter(x=>x.status==="Approved").length;document.getElementById("rejected").textContent=rows.filter(x=>x.status==="Rejected").length;document.getElementById("list").innerHTML=view.length?view.map(v=>'<article class="box vendor"><span class="tag">'+esc(v.status||"Received")+'</span><h3>'+esc(v.customer_name)+'</h3><p class="meta"><b>Reference:</b> '+esc(v.ticket_no)+'<br><b>Category:</b> '+esc(v.request_type)+'<br><b>Phone:</b> '+esc(v.phone)+'<br><b>Location:</b> '+esc(v.location)+'<br><b>Received:</b> '+esc(new Date(v.created_at).toLocaleString("en-PK"))+'</p><div class="details">'+esc(v.details||"")+'</div><div class="actions"><button class="btn purple" onclick="setStatus(\''+v.id+'\',\'Under Review\')">Under Review</button><button class="btn green" onclick="setStatus(\''+v.id+'\',\'Approved\')">Approve</button><button class="btn red" onclick="setStatus(\''+v.id+'\',\'Rejected\')">Reject</button></div></article>').join(""):'<div class="box">No vendor applications found.</div>'}
+    async function setStatus(id,status){try{await api("/rest/v1/service_requests?id=eq."+encodeURIComponent(id),{method:"PATCH",headers:{Prefer:"return=minimal"},body:JSON.stringify({status,updated_at:new Date().toISOString()})});await load()}catch(e){alert(e.message)}}
+    start();
+  </script>
+</body>
+</html>
