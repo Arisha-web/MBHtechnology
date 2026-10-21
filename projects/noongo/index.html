@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NoonGo — A Project by MBH Technology</title>
+<meta name="description" content="Discover NoonGo, the delivery platform by MBH Technology connecting customers, merchants and riders in Sukkur.">
+<link rel="canonical" href="https://mbhtechnologyskr.com/projects/noongo/">
+<style>
+:root{color-scheme:dark;--bg:#081326;--panel:#111f36;--muted:#acbad0;--orange:#ff932e}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#f5f7fc;font-family:Arial,sans-serif;line-height:1.65}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1120px;margin:auto;padding:0 24px}
+header{border-bottom:1px solid #ffffff18}
+header .wrap{min-height:86px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.brand{font-weight:800;letter-spacing:2px;font-size:14px}
+.back{font-size:13px;color:var(--muted)}
+.hero{padding:80px 0 64px;background:radial-gradient(ellipse at 85% 40%,#ff932e19,transparent 55%)}
+.hero-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:56px;align-items:center}
+.badge{display:inline-block;border:1px solid #ff932e55;border-radius:40px;padding:7px 14px;color:#ffc68e;font-size:12px;letter-spacing:1px}
+h1{font-size:clamp(64px,10vw,108px);line-height:1.05;letter-spacing:-5px;margin:24px 0}
+h1 span{color:var(--orange)}
+h2{font-size:clamp(28px,4vw,40px);line-height:1.2;margin:12px 0 20px;letter-spacing:-1px}
+h3{font-size:21px;margin:12px 0}
+.tagline{font-size:25px;margin:0 0 16px}
+p{color:var(--muted);margin:12px 0 22px}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:13px 21px;border-radius:12px;font-size:14px;font-weight:bold;border:1px solid #ffffff25;transition:transform .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn.primary{background:var(--orange);color:#17100a;border-color:var(--orange)}
+a:focus-visible{outline:3px solid #ffc68e;outline-offset:5px}
+.note{font-size:12px;margin-top:18px}
+.phone{max-width:320px;margin:auto;border:6px solid #334159;border-radius:40px;padding:23px;background:#0d1b30;box-shadow:0 30px 80px #0007;transform:rotate(4deg)}
+.phone-top{width:70px;height:7px;background:#334159;margin:0 auto 30px;border-radius:10px}
+.phone-brand{font-size:29px;font-weight:bold}
+.phone-brand span{color:var(--orange)}
+.phone small{color:var(--muted)}
+.illustration{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.flow{margin-top:26px}
+.flow div{border:1px solid #ffffff12;border-radius:15px;padding:15px;margin-top:12px;background:#ffffff04}
+.flow b{color:var(--orange);margin-right:12px}
+.flow span{display:block;color:var(--muted);font-size:12px;margin-left:29px}
+.phone-footer{margin-top:25px;background:var(--orange);color:#17100a;text-align:center;padding:12px;border-radius:12px;font-weight:bold;font-size:13px}
+section.content{padding:64px 0;border-top:1px solid #ffffff12}
+.kicker{font-size:12px;text-transform:uppercase;letter-spacing:2px;color:var(--orange)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:30px}
+.card{background:var(--panel);border:1px solid #ffffff12;border-radius:20px;padding:27px}
+.num{font-size:13px;color:var(--orange);font-weight:bold}
+.card p{font-size:14px}
+.card a{color:#ffc68e;font-size:14px;font-weight:bold}
+.features{display:grid;grid-template-columns:1fr 1fr;gap:22px 40px;margin-top:30px}
+.feature{border-left:2px solid var(--orange);padding-left:20px}
+.feature strong{display:block}
+.feature p{font-size:14px;margin:7px 0}
+.download{border-radius:24px;padding:36px;background:linear-gradient(120deg,#203454,#142137);border:1px solid #ffffff18}
+.pill{display:inline-block;font-size:12px;background:#ffffff0c;border:1px solid #ffffff20;padding:7px 14px;border-radius:30px;color:var(--muted)}
+footer{padding:30px 0;border-top:1px solid #ffffff15;color:var(--muted);font-size:12px}
+@media(max-width:760px){.hero{padding:48px 0}.hero-grid{grid-template-columns:1fr;gap:42px}.phone{transform:none;width:100%}.grid,.features{grid-template-columns:1fr}.download{padding:25px}.back{font-size:12px}.wrap{padding:0 20px}}
+@media(prefers-reduced-motion:reduce){.btn{transition:none}.btn:hover{transform:none}}
+
+.premium-header{background:linear-gradient(120deg,#10233e,#081326);border-top:3px solid #ff932e}
+.premium-header .premium-bar{min-height:96px}
+.mbh-brand{display:flex;align-items:center;gap:13px;min-width:0}
+.mbh-brand img{flex-shrink:0;border-radius:13px;box-shadow:0 0 24px #48a9ff30}
+.mbh-brand strong{display:block;font-size:15px;letter-spacing:1.5px}
+.mbh-brand small{display:block;font-size:8px;color:#acbad0;letter-spacing:1px;margin-top:3px}
+.header-launch{background:#ff932e;color:#17100a;padding:10px 16px;border-radius:10px;font-size:12px;font-weight:bold;white-space:nowrap}
+.header-launch span{margin-left:6px}
+.project-strip{background:#ffffff04;border-top:1px solid #ffffff0c}
+.strip-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:58px}
+.strip-brand{font-size:21px;font-weight:800;letter-spacing:-1px}
+.strip-brand>span{color:#ff932e}
+.strip-brand small{display:inline-block;font-size:8px;color:#acbad0;letter-spacing:1px;margin-left:12px;vertical-align:middle}
+.strip-inner nav{display:flex;gap:20px;font-size:12px;color:#c4d0e2}
+@media(max-width:480px){
+.mbh-brand{gap:9px}.mbh-brand img{width:39px;height:39px}
+.mbh-brand strong{font-size:11px;letter-spacing:1px}
+.mbh-brand small{font-size:6px;letter-spacing:.5px}
+.header-launch{padding:9px 11px;font-size:11px}
+.strip-brand small{display:none}.strip-inner nav{gap:16px}
+}
+
+</style>
+</head>
+<body>
+
+<header class="premium-header">
+<div class="wrap premium-bar">
+<a class="mbh-brand" href="https://mbhtechnologyskr.com/">
+<img src="https://mbhtechnologyskr.com/app/mbh-official-icon-2026.png" alt="MBH Technology" width="48" height="48">
+<span><strong>MBH TECHNOLOGY</strong><small>ENGINEERING & DIGITAL SOLUTIONS</small></span>
+</a>
+<a class="header-launch" href="https://noongo.mbhtechnologyskr.com/user.html">Open App <span aria-hidden="true">↗</span></a>
+</div>
+<div class="project-strip"><div class="wrap strip-inner">
+<a class="strip-brand" href="#platform">Noon<span>Go</span><small>A PROJECT BY MBH</small></a>
+<nav aria-label="Project navigation"><a href="#platform">Platform</a><a href="#download">Get the App</a></nav>
+</div></div>
+</header>
+
+<main>
+<section class="hero"><div class="wrap hero-grid">
+<div>
+<div class="badge">RUNNING PROJECT · SUKKUR, PAKISTAN</div>
+<h1>Noon<span>Go</span></h1>
+<div class="tagline">Fast delivery, easy life.</div>
+<p>A delivery platform connecting local customers, merchants and riders. Built by MBH Technology to bring ordering and delivery coordination into one connected experience.</p>
+<div class="actions">
+<a class="btn primary" href="https://noongo.mbhtechnologyskr.com/user.html">Open Customer App ↗</a>
+<a class="btn" href="#platform">Explore NoonGo ↓</a>
+</div>
+<p class="note">Pilot rollout · Service availability depends on participating merchants and rider coverage.</p>
+</div>
+<div class="phone" role="img" aria-label="Illustrated ordering journey: browse, follow order progress and receive delivery">
+<div class="phone-top"></div>
+<div class="illustration">Platform illustration</div>
+<div class="phone-brand">Noon<span>Go</span></div>
+<small>Your local delivery connection.</small>
+<div class="flow">
+<div><b>01</b> Browse & choose<span>Discover participating stores</span></div>
+<div><b>02</b> Follow your order<span>Stay informed as it progresses</span></div>
+<div><b>03</b> Receive your delivery<span>Delivered to your selected location</span></div>
+</div>
+<div class="phone-footer">Powered by MBH Technology</div>
+</div>
+</div></section>
+
+<section class="content" id="platform"><div class="wrap">
+<span class="kicker">One connected platform</span>
+<h2>Three roles. One delivery journey.</h2>
+<div class="grid">
+<article class="card"><span class="num">01 / CUSTOMERS</span><h3>Order with clarity.</h3><p>Browse available menus, choose a delivery location and review distance-based delivery charges before placing your order.</p><a href="https://noongo.mbhtechnologyskr.com/user.html">Customer App ↗</a></article>
+<article class="card"><span class="num">02 / MERCHANTS</span><h3>Manage every step.</h3><p>Receive orders and coordinate acceptance, preparation and handover through the merchant portal. Partner access requires approval.</p><a href="https://noongo.mbhtechnologyskr.com/merchant.html">Merchant Portal ↗</a></article>
+<article class="card"><span class="num">03 / RIDERS</span><h3>Keep deliveries moving.</h3><p>Approved riders can manage assigned deliveries, update progress and view recorded earnings through their rider account.</p><a href="https://noongo.mbhtechnologyskr.com/rider.html">Rider Portal ↗</a></article>
+</div>
+</div></section>
+
+<section class="content"><div class="wrap">
+<span class="kicker">Built around local delivery</span>
+<h2>From store to doorstep.</h2>
+<div class="features">
+<div class="feature"><strong>Distance-based delivery pricing</strong><p>Delivery charges calculated using the selected store and customer delivery location.</p></div>
+<div class="feature"><strong>Order progress updates</strong><p>A connected workflow for customers, merchants and riders as orders move toward delivery.</p></div>
+<div class="feature"><strong>Account-based access</strong><p>Separate customer and partner experiences, with approval required for merchant and rider operations.</p></div>
+<div class="feature"><strong>Mobile-friendly web access</strong><p>Open NoonGo directly in your phone browser without downloading an APK.</p></div>
+</div>
+</div></section>
+
+<section class="content" id="download"><div class="wrap"><div class="download">
+<span class="kicker">Take NoonGo with you</span>
+<h2>Ready in your browser.</h2>
+<p>Use the web app today. The Android APK will be available here after the signed build has been tested.</p>
+<span class="pill">Android APK · Coming soon</span><figure style="margin:25px 0">
+<img src="noongo-qr.svg" width="180" height="180" alt="QR code for the NoonGo project page" style="background:white;padding:12px;border-radius:12px">
+<figcaption style="font-size:13px;color:#acbad0;margin-top:10px">Scan to visit the NoonGo project page.</figcaption>
+</figure>
+<div class="actions">
+<a class="btn primary" href="https://noongo.mbhtechnologyskr.com/user.html">Open Web App ↗</a>
+<a class="btn" href="https://wa.me/923145802313">Partner with NoonGo ↗</a>
+</div>
+</div></div></section>
+</main>
+<footer><div class="wrap">NoonGo — A project by <a href="/">MBH Technology</a> · Sukkur, Sindh, Pakistan</div></footer>
+</body>
+</html>
